@@ -3,8 +3,10 @@
       *****************************************************************
       *Création d'une ville
        CREATE_TOWN.
-       DISPLAY'Donnez un ID'
-       ACCEPT fv_id
+
+       PERFORM GET_ID_VILLE
+       MOVE WidCourantVille TO fv_id
+
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fv_nom IS ALPHABETIC
          ACCEPT fv_nom
@@ -20,9 +22,9 @@
 
       *Création d'une salle
        CREATE_ROOM.
+       PERFORM GET_ID_SALLE
+       MOVE WidCourantSalle TO fs_id
 
-       DISPLAY'Donnez un ID'
-       ACCEPT fs_id
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fs_nom IS ALPHABETIC
          ACCEPT fs_nom
@@ -53,7 +55,9 @@
       *Création d'un club
        CREATE_CLUB.
 
+       PERFORM GET_ID_CLUB
        MOVE WidCourantClub TO fc_id
+
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fc_nom IS ALPHABETIC
          ACCEPT fc_nom
@@ -81,6 +85,7 @@
        CREATE_ASSOC.
 
        DISPLAY 'Id de la salle:'
+
        PERFORM WITH TEST AFTER UNTIL fa_idSalle IS NUMERIC
          ACCEPT fa_idSalle
        END-PERFORM
@@ -224,24 +229,23 @@
        DISPLAY_SALLES.
        
        CLOSE fville
-       OPEN I-O fville
+       OPEN OUTPUT fville
        DISPLAY "**********************************************"
        MOVE 0 TO WendSearch
        PERFORM WITH TEST AFTER UNTIL WendSearch = 1
          READ fsalle NEXT
-         AT END
-           MOVE 1 TO WendSearch
-         NOT AT END
-           DISPLAY "**** Id:",fs_id," ****"
-           DISPLAY "Nom de la salle : ",fs_nom
-           DISPLAY "Disponibilité de la salle : ",fs_dispo
-           DISPLAY "H ouverture salle :",fs_ouv_h
-           DISPLAY "H de fermeture salle :",fs_ferm_h
-           DISPLAY "Adresse de la salle : ",fs_addr
-           DISPLAY "Ville de la salle : ",fs_ville
-           DISPLAY "Prix de la salle : ",fs_prix
-           DISPLAY "----------------"
-         END-READ
+           AT END
+             MOVE 1 TO WendSearch
+           NOT AT END
+             DISPLAY "**** Id:",fs_id," ****"
+             DISPLAY "Nom de la salle : ",fs_nom
+             DISPLAY "Disponibilité de la salle : ",fs_dispo
+             DISPLAY "H ouverture salle :",fs_ouv_h
+             DISPLAY "H de fermeture salle :",fs_ferm_h
+             DISPLAY "Adresse de la salle : ",fs_addr
+             DISPLAY "Ville de la salle : ",fs_ville
+             DISPLAY "Prix de la salle : ",fs_prix
+             DISPLAY "----------------"
        END-PERFORM.
        
       *Affichage des associations

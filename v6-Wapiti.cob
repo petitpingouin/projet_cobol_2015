@@ -137,9 +137,11 @@
        77 WidCourantClub PIC 9(4).
        77 WclubConnecte PIC 9(4).
        77 Wrecherche_jour PIC X(10).
-       77 WinitFile PIC 9.
        77 WfileStatus PIC 9.
        77 WendSearch PIC 9.
+       77 Wtrouve PIC 9.
+       77 Wnontrouve PIC 9.
+       77 Wtemp PIC 9(15).
        
       *RESA
        77 Wrep1 PIC 9.
@@ -156,8 +158,7 @@
        PROCEDURE DIVISION.
 
       *PROGRAMME PRINCIPAL
-      * Initialisation des ID
-       PERFORM INIT_ID
+      
       * Initialisation des fichiers
 
       * Fichier club
@@ -207,6 +208,10 @@
           CLOSE fid
           OPEN I-O fid
        END-IF
+
+      * Initialisation des ID si le fichier n'est pas initialisé
+       PERFORM GET_FILE_STATUS
+       PERFORM INIT_ID
 
        MOVE 1 TO Wlogin
        PERFORM WITH TEST AFTER UNTIL Wlogin=0
