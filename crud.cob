@@ -25,6 +25,8 @@
        PERFORM GET_ID_SALLE
        MOVE WidCourantSalle TO fs_id
 
+       DISPLAY "fs_id : ",fs_id
+
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fs_nom IS ALPHABETIC
          ACCEPT fs_nom
