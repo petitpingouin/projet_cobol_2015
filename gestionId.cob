@@ -29,7 +29,7 @@
        CLOSE fid
        OPEN I-O fid
        PERFORM WITH TEST AFTER UNTIL Wtrouve = 1
-         READ fid NEXT
+         READ fid
            AT END
              MOVE 1 TO Wtrouve
              DISPLAY "Erreur dans l'attribution d'un ID à cette salle"
@@ -37,6 +37,7 @@
            NOT AT END
              IF fid_type='salle' THEN
                 MOVE fid_idMax TO WidCourantSalle
+                MOVE fid_idMax TO Wtemp
                 ADD 1 TO Wtemp
                 MOVE Wtemp TO fid_idMax
                 REWRITE Tid
@@ -50,16 +51,16 @@
        CLOSE fid
        OPEN I-O fid
        PERFORM WITH TEST AFTER UNTIL Wtrouve = 1
-         READ fid NEXT
+         READ fid
            AT END
              MOVE 1 TO Wtrouve
            NOT AT END
              IF fid_type='ville' THEN
                 MOVE fid_idMax TO WidCourantVille
+                MOVE fid_idMax TO Wtemp
                 ADD 1 TO Wtemp
                 MOVE Wtemp TO fid_idMax
                 REWRITE Tid
-                DISPLAY "incrémentation ville"
                 MOVE 1 TO Wtrouve
              END-IF
        END-PERFORM.
@@ -70,7 +71,7 @@
        CLOSE fid
        OPEN I-O fid
        PERFORM WITH TEST AFTER UNTIL Wtrouve = 1
-         READ fid NEXT
+         READ fid
            AT END
              MOVE 1 TO Wtrouve
              DISPLAY "Erreur dans l'attribution d'un ID à ce club"
@@ -78,6 +79,7 @@
            NOT AT END
              IF fid_type='club' THEN
                 MOVE fid_idMax TO WidCourantClub
+                MOVE fid_idMax TO Wtemp
                 ADD 1 TO Wtemp
                 MOVE Wtemp TO fid_idMax
                 REWRITE Tid

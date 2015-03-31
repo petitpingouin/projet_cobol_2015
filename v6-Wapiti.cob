@@ -11,7 +11,7 @@
       *fville_stat permettra de récupérer le statut du fichier
        FILE STATUS IS fville_stat
        RECORD KEY IS fv_id
-       ALTERNATE RECORD KEY IS fv_codePost.
+       ALTERNATE RECORD KEY IS fv_codePost WITH DUPLICATES.
 
        SELECT fsalle ASSIGN TO "salle.dat"
        ORGANIZATION INDEXED
@@ -19,9 +19,9 @@
       *fsalle_stat permettra de récupérer le statut du fichier
        FILE STATUS IS fsalle_stat
        RECORD KEY IS fs_id
-       ALTERNATE RECORD KEY IS fs_nom
-       ALTERNATE RECORD KEY IS fs_dispo
-       ALTERNATE RECORD KEY IS fs_ville.
+       ALTERNATE RECORD KEY IS fs_nom WITH DUPLICATES
+       ALTERNATE RECORD KEY IS fs_dispo WITH DUPLICATES
+       ALTERNATE RECORD KEY IS fs_ville WITH DUPLICATES.
 
        SELECT fclub ASSIGN TO "club.dat"
        ORGANIZATION INDEXED
@@ -29,7 +29,7 @@
       *fclub_stat permettra de récupérer le statut du fichier
        FILE STATUS IS fclub_stat
        RECORD KEY IS fc_id
-       ALTERNATE RECORD KEY IS fc_ville.
+       ALTERNATE RECORD KEY IS fc_ville WITH DUPLICATES.
 
        SELECT fassoc ASSIGN TO "assocsport.dat"
        ORGANIZATION INDEXED

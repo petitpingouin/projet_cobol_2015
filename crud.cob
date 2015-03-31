@@ -7,6 +7,8 @@
        PERFORM GET_ID_VILLE
        MOVE WidCourantVille TO fv_id
 
+       DISPLAY "Identifiant : ",fv_id
+
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fv_nom IS ALPHABETIC
          ACCEPT fv_nom
@@ -17,7 +19,10 @@
        END-PERFORM
        
        WRITE Tville
-       DISPLAY "La ville a été créé.".
+       INVALID KEY
+         DISPLAY "/!\ Erreur"
+       NOT INVALID KEY
+         DISPLAY "La ville a été créé.".
 
 
       *Création d'une salle
@@ -25,7 +30,7 @@
        PERFORM GET_ID_SALLE
        MOVE WidCourantSalle TO fs_id
 
-       DISPLAY "fs_id : ",fs_id
+       DISPLAY "Identifiant : ",fs_id
 
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fs_nom IS ALPHABETIC
@@ -37,8 +42,8 @@
          ACCEPT fs_ouv_h
        END-PERFORM
        DISPLAY "Donnez l'heure de fermeture :"
-       PERFORM WITH TEST AFTER UNTIL (fs_ferm_h IS NUMERIC)
-      -AND (fs_ferm_h > fs_ouv_h)
+       PERFORM WITH TEST AFTER UNTIL (fs_ferm_h IS NUMERIC)AND (fs_ferm_
+      -h > fs_ouv_h)
          ACCEPT fs_ferm_h
        END-PERFORM
        DISPLAY "Entrez l'adresse de la salle"
@@ -53,13 +58,18 @@
        END-PERFORM
        
        WRITE Tsalle
-       DISPLAY "La salle a été créé.".
+       INVALID KEY
+         DISPLAY "/!\ Erreur"
+       NOT INVALID KEY
+         DISPLAY "La salle a été créée.".
       
       *Création d'un club
        CREATE_CLUB.
 
        PERFORM GET_ID_CLUB
        MOVE WidCourantClub TO fc_id
+
+       DISPLAY "Identifiant : ",fc_id
 
        DISPLAY'Donnez un nom'
        PERFORM WITH TEST AFTER UNTIL fc_nom IS ALPHABETIC
@@ -81,7 +91,10 @@
        END-PERFORM
        
        WRITE Tclub
-       DISPLAY "Le club a été créé et a pour id :",WidCourantClub.
+       INVALID KEY
+         DISPLAY "/!\ Erreur"
+       NOT INVALID KEY
+         DISPLAY "Le club a été créé".
        
        
       *Création d'une association sport/salle
@@ -104,7 +117,10 @@
          END-PERFORM
         
          WRITE Tassoc
-         DISPLAY "Association ajoutée".
+         INVALID KEY
+           DISPLAY "/!\ Erreur"
+         NOT INVALID KEY
+           DISPLAY "Association ajoutée".
 
       *****************************************************************
       * LECTURES
@@ -230,14 +246,10 @@
        
       *Affichage des salles
        DISPLAY_SALLES.
-       
-<<<<<<< HEAD
+
        CLOSE fsalle
        OPEN I-O fsalle
-=======
-       CLOSE fville
-       OPEN OUTPUT fville
->>>>>>> 53827e3bbc903fa67baca2cee1057b7f8ff8dee3
+
        DISPLAY "**********************************************"
        MOVE 0 TO WendSearch
        PERFORM WITH TEST AFTER UNTIL WendSearch = 1
