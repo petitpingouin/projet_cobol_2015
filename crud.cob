@@ -223,8 +223,8 @@
       *Affichage des salles
        DISPLAY_SALLES.
        
-       CLOSE fville
-       OPEN I-O fville
+       CLOSE fsalle
+       OPEN I-O fsalle
        DISPLAY "**********************************************"
        MOVE 0 TO WendSearch
        PERFORM WITH TEST AFTER UNTIL WendSearch = 1

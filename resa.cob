@@ -2,8 +2,11 @@
       ******************************************************************
        IS_DISPO.
        
+       MOVE fr_dateDebut_a TO Wresa_a
+       MOVE fr_dateDebut_m TO Wresa_m
+       MOVE fr_dateDebut_j TO Wresa_j
        MOVE fr_dateDebut_h TO WHdebut
-       MOVE fr_dateFin_h TO WHfin.
+       MOVE fr_dateFin_h TO WHfin
        
       *Test compatiblité du sport demandé avec la salle
        MOVE fr_idSalle TO fa_idSalle
@@ -31,10 +34,18 @@
                PERFORM WITH TEST AFTER UNTIL Wresaimpossible=1
                  READ fresa NEXT
                  NOT AT END
-                   IF (fr_dateFin_h > WHdebut AND fr_dateFin_h < WHfin) 
-      -OR (fr_dateDebut_h > WHdebut AND fr_dateDebut_h < WHfin) OR (fr_d
-      -ateDebut_h < WHdebut AND fr_dateFin_h > WHfin) THEN 
-                     MOVE 1 TO Wresaimpossible 		
+                   IF (fr_dateDebut_a = Wresa_a AND fr_dateDebut_m = Wre
+      -sa_m AND fr_dateDebut_j = Wresa_j) THEN
+      *                Bon jour
+      
+                     IF (fr_dateFin_h > WHdebut AND fr_dateFin_h < WHfin
+      -) OR (fr_dateDebut_h > WHdebut AND fr_dateDebut_h < WHfin) OR (fr
+      -_dateDebut_h < WHdebut AND fr_dateFin_h > WHfin) THEN 
+      *                Une résa existe, impossible
+      
+                       MOVE 1 TO Wresaimpossible 
+                       		
+                     END-IF
                    END-IF
                  END-READ
                END-PERFORM
@@ -71,10 +82,6 @@
       *Ajoute une réservation
       ******************************************************************
        ADD_RESA.
-       
-      *OUVERTURES
-       OPEN INPUT fsalle
-       OPEN I-O fresa
     
       *MAIN
        DISPLAY 'Donnez les informations de votre reservation'
@@ -123,9 +130,10 @@
            DISPLAY 'Voulez-vous une salle en particulier (0/1)?'  
            ACCEPT Wrep1
            IF Wrep1 = 0 THEN
-             DISPLAY "HOP ON CHERCHE"
-      *      PERFORM RECHERCHE_Salle
+      *      On cherche toutes les salles dispos à ce créneau
+             PERFORM RECHERCHE_Salle
            ELSE
+      *      Sélection directe de la salle
              DISPLAY 'Numero de la salle:'
              PERFORM WITH TEST AFTER UNTIL fr_idSalle IS NUMERIC
                ACCEPT fr_idSalle
@@ -146,16 +154,13 @@
        IF Wresaimpossible = 1 THEN
          DISPLAY "Réservation impossible"
        ELSE       
-         OPEN I-O fresa
+      *  QQ TRAITEMENTS...
+      
+      *  ECRITURE
          WRITE Tresa
          INVALID KEY  
            DISPLAY "Erreur d'écriture"
          NOT INVALID KEY
            DISPLAY 'Reservation effectuée !'
          END-WRITE
-       END-IF
-       
-      *FERMUTURES
-       CLOSE fclub
-       CLOSE fsalle
-       CLOSE fresa.
+       END-IF.

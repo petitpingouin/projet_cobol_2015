@@ -148,6 +148,9 @@
        77 Wfin PIC 9.
        77 Wjours PIC A(20).
        77 Wresaimpossible PIC 9.
+       77 Wresa_a PIC 99(4).
+       77 Wresa_m PIC 99.
+       77 Wresa_j PIC 9(2).
        77 WHfin PIC 99.
        77 WHdebut PIC 99.
        77 Wfin3 PIC 9.
