@@ -37,7 +37,8 @@
          ACCEPT fs_ouv_h
        END-PERFORM
        DISPLAY "Donnez l'heure de fermeture :"
-       PERFORM WITH TEST AFTER UNTIL fs_ferm_h IS NUMERIC
+       PERFORM WITH TEST AFTER UNTIL (fs_ferm_h IS NUMERIC)
+      -AND (fs_ferm_h > fs_ouv_h)
          ACCEPT fs_ferm_h
        END-PERFORM
        DISPLAY "Entrez l'adresse de la salle"
