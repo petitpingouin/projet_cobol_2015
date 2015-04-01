@@ -10,12 +10,13 @@
          DISPLAY "1- Déconnexion"
          DISPLAY "2- Consultation du planning"
          DISPLAY "3- Gestion des réservations"
-         DISPLAY "4- Gestion de compte"
+         DISPLAY "4- Modification de votre compte"
          DISPLAY "5- Statistiques"
          DISPLAY "----"
          ACCEPT Woption
          EVALUATE Woption
              WHEN 0 PERFORM SHUTDOWN
+             WHEN 2 PERFORM MENU_PLANNING
              WHEN 3 PERFORM MENU_GESTION_RESA
              WHEN 4 PERFORM MENU_GESTION_MODIF_CLUB
          END-EVALUATE
@@ -49,16 +50,16 @@
              WHEN 5 PERFORM MENU_GESTION_CLUB
              WHEN 6 PERFORM MENU_GESTION_ASSOC
              WHEN 7 PERFORM MENU_ENTRETIEN
-             WHEN 8 PERFORM MENU_STATISTIQUES
+             WHEN 8 PERFORM MENU_STATISTIQUES_ADMIN
              WHEN 9 PERFORM MENU_PLANNING
              WHEN 10 PERFORM MENU_RECHERCHES
          END-EVALUATE
        END-PERFORM.
 
-       MENU_STATISTIQUES.
+       MENU_STATISTIQUES_ADMIN.
        PERFORM WITH TEST AFTER UNTIL Woption2=1
          DISPLAY "*********************************************"
-         DISPLAY "           Affichage du planning             "
+         DISPLAY "         Affichage des Statistiques          "
          DISPLAY "*********************************************"
          DISPLAY "Sélectionnez une option :"
          DISPLAY "----"
@@ -68,7 +69,6 @@
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
-             
          END-EVALUATE
        END-PERFORM.
        
@@ -81,11 +81,20 @@
          DISPLAY "----"
          DISPLAY "0- Quitter le programme"
          DISPLAY "1- Revenir au menu précédent"
+         IF WconnectedAsAdmin = 0 THEN
+           DISPLAY "2- Afficher toutes mes réservations"
+         ELSE
+           DISPLAY "2- Afficher les réservations par club"
+         END-IF
+         DISPLAY "3- Afficher toutes les réservations"
+         DISPLAY "4- Afficher les réservations par salle"
          DISPLAY "----"
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
-             
+             WHEN 2 PERFORM DISPLAY_RESAS_BY_CLUB
+             WHEN 3 PERFORM DISPLAY_RESAS
+             WHEN 4 PERFORM DISPLAY_RESAS_BY_SALLE
          END-EVALUATE
        END-PERFORM.
        
@@ -117,15 +126,12 @@
          DISPLAY "1- Revenir au menu précédent"
          DISPLAY "2- Créer une réservation"
          DISPLAY "3- Supprimer une réservation"
-         DISPLAY "4- Rechercher une réservation"
-         DISPLAY "5- Afficher toutes les réservations"
          DISPLAY "----"
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
              WHEN 2 PERFORM ADD_RESA
              WHEN 3 PERFORM DELETE_RESA
-             WHEN 5 PERFORM DISPLAY_RESAS
          END-EVALUATE
        END-PERFORM.
 
@@ -327,3 +333,4 @@
              WHEN 8 PERFORM MODIFY_ROOM_PRIX
          END-EVALUATE
        END-PERFORM.
+       

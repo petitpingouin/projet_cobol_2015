@@ -3,6 +3,9 @@
       *****************************************************************
       *Création d'une ville
        CREATE_TOWN.
+        
+       CLOSE fville
+       OPEN I-O fville
 
        PERFORM GET_ID_VILLE
        MOVE WidCourantVille TO fv_id
@@ -10,9 +13,7 @@
        DISPLAY "Identifiant : ",fv_id
 
        DISPLAY'Donnez un nom'
-       PERFORM WITH TEST AFTER UNTIL fv_nom IS ALPHABETIC
-         ACCEPT fv_nom
-       END-PERFORM
+       ACCEPT fv_nom
        
        DISPLAY'Donnez un code postal'
        PERFORM WITH TEST AFTER UNTIL fv_codePost IS NUMERIC
@@ -44,13 +45,14 @@
        END-PERFORM
 
        DISPLAY "Donnez l'heure d'ouverture :"
-       PERFORM WITH TEST AFTER UNTIL fs_ouv_h IS NUMERIC
+       PERFORM WITH TEST AFTER UNTIL fs_ouv_h IS NUMERIC AND fs_ouv_h >=
+      - 0 AND fs_ouv_h <= 23
          ACCEPT fs_ouv_h
        END-PERFORM
        
        DISPLAY "Donnez l'heure de fermeture :"
-       PERFORM WITH TEST AFTER UNTIL (fs_ferm_h IS NUMERIC)AND (fs_ferm_
-      -h > fs_ouv_h)
+       PERFORM WITH TEST AFTER UNTIL fs_ferm_h IS NUMERIC AND fs_ferm_h 
+      ->= 0 AND fs_ferm_h <= 23 AND fs_ferm_h > fs_ouv_h
          ACCEPT fs_ferm_h
        END-PERFORM
         
@@ -180,43 +182,25 @@
            END-READ
          END-PERFORM
          DISPLAY "--------------------------"
+       END-IF
         
-         MOVE 1 TO WcrudChoix
-         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
-           DISPLAY "Entrez l'ID de la ville correspondante:"
-           PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
-             ACCEPT fc_ville
-           END-PERFORM
-           
-      *    La ville existe-t-elle?
-           MOVE fc_ville TO fv_id
-           READ fville KEY IS fv_id
-           INVALID KEY
-             DISPLAY "La salle n'existe pas"
-           NOT INVALID KEY
-             MOVE 0 TO WcrudChoix
-           END-READ
+      *Sélection directe de la ville
+       MOVE 1 TO WcrudChoix
+       PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+         DISPLAY "Entrez l'ID de la ville correspondante:"
+         PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
+           ACCEPT fc_ville
          END-PERFORM
          
-       ELSE
-      *  Sélection directe de la ville
-         MOVE 1 TO WcrudChoix
-         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
-           DISPLAY "Entrez l'ID de la ville correspondante:"
-           PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
-             ACCEPT fc_ville
-           END-PERFORM
-           
-      *    La ville existe-t-elle?
-           MOVE fc_ville TO fv_id
-           READ fville KEY IS fv_id
-           INVALID KEY
-             DISPLAY "La salle n'existe pas"
-           NOT INVALID KEY
-             MOVE 0 TO WcrudChoix
-           END-READ
-         END-PERFORM
-       END-IF
+      *  La ville existe-t-elle?
+         MOVE fc_ville TO fv_id
+         READ fville KEY IS fv_id
+         INVALID KEY
+           DISPLAY "La salle n'existe pas"
+         NOT INVALID KEY
+           MOVE 0 TO WcrudChoix
+         END-READ
+       END-PERFORM
        
        
        DISPLAY'Donnez le sport proposé par le club'
@@ -320,8 +304,8 @@
                DISPLAY "/!\ Erreur"
              NOT INVALID KEY
                DISPLAY "Association ajoutée"
-             END-READ
-           END-PERFORM
+           END-READ
+         END-PERFORM
        END-IF.
         
       *****************************************************************
@@ -421,6 +405,7 @@
            DISPLAY "**** Id:",fv_id," ****"
            DISPLAY "Nom de la ville : ",fv_nom
            DISPLAY "Code postal de la ville : ",fv_codePost
+           DISPLAY "Agglo ?: ",fv_agglo
            DISPLAY "----------------"
          END-READ
        END-PERFORM.
@@ -500,16 +485,19 @@
          AT END
            MOVE 1 TO WendSearch
          NOT AT END
+      *    N'affiche que si admin ou résa du club
            DISPLAY "Id Salle:", fr_idSalle
            DISPLAY "Club: ", fr_idClub
            DISPLAY "Sport: ", fr_sportPratique
            DISPLAY "Date: ",fr_dateDebut_j,"/",fr_dateDebut_m,"/",fr_dat
       -eDebut_j
            DISPLAY "De ", fr_dateDebut_h, " à ", fr_dateFin_h
-           DISPLAY "Montant: ", fr_montant
+           IF WconnectedAsAdmin = 1 THEN
+             DISPLAY "Montant: ", fr_montant
+           END-IF
            DISPLAY "----------------"
-         END-READ
-         END-PERFORM.
+       END-READ
+       END-PERFORM.
 
       ****************************************************************
       * MODIFICATIONS
@@ -528,9 +516,7 @@
             DISPLAY "Il n'existe pas de ville portant ce numéro"
           NOT INVALID KEY
             DISPLAY "Entrez le nouveau nom de la ville"
-            PERFORM WITH TEST AFTER UNTIL fv_nom IS ALPHABETIC
-              ACCEPT fv_nom
-            END-PERFORM
+            ACCEPT fv_nom
             REWRITE Tville
               INVALID KEY
                  DISPLAY "La ville a été modifiée avec succès."
@@ -635,7 +621,8 @@
             DISPLAY "Il n'existe pas de salle portant ce numéro"
           NOT INVALID KEY
             DISPLAY "Entrez l'heure d'ouverture de la salle (hh) :"
-            PERFORM WITH TEST AFTER UNTIL fs_ouv_h IS NUMERIC
+            PERFORM WITH TEST AFTER UNTIL fs_ouv_h IS NUMERIC AND fs_ouv
+      -_h >= 0 AND fs_ouv_h <= 23
               ACCEPT fs_ouv_h
             END-PERFORM
             REWRITE Tsalle
@@ -655,7 +642,8 @@
             DISPLAY "Il n'existe pas de salle portant ce numéro"
           NOT INVALID KEY
             DISPLAY "Entrez l'heure de fermeture de la salle (hh)"
-            PERFORM WITH TEST AFTER UNTIL fs_ferm_h IS NUMERIC
+            PERFORM WITH TEST AFTER UNTIL fs_ferm_h IS NUMERIC AND fs_fe
+      -rm_h >= 0 AND fs_ferm_h <= 23 AND fs_ferm_h > fs_ouv_h
               ACCEPT fs_ferm_h
             END-PERFORM
             REWRITE Tsalle
@@ -788,10 +776,16 @@
       * Modifications propres au club
       *MODIFICATION DU NOM CLUB
        MODIFY_CLUB_NOM.
-       DISPLAY "Entrez l'ID du club"
-       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
-         ACCEPT fc_id
-       END-PERFORM
+       
+       IF WconnectedAsAdmin = 0 THEN
+         MOVE WnumClub TO fc_id
+       ELSE
+         DISPLAY "Entrez l'ID du club"
+         PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+           ACCEPT fc_id
+         END-PERFORM
+       END-IF
+       
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -809,10 +803,15 @@
       *MODIFICATION DE L'ADRESSE DU CLUB
        MODIFY_CLUB_ADDR.
 
-       DISPLAY "Entrez l'ID du club"
-       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
-         ACCEPT fc_id
-       END-PERFORM
+       IF WconnectedAsAdmin = 0 THEN
+         MOVE WnumClub TO fc_id
+       ELSE
+         DISPLAY "Entrez l'ID du club"
+         PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+           ACCEPT fc_id
+         END-PERFORM
+       END-IF
+       
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -830,10 +829,15 @@
       *MODIFICATION DU PRESIDENT DU CLUB
        MODIFY_CLUB_PSDT.
 
-       DISPLAY "Entrez l'ID du club"
-       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
-         ACCEPT fc_id
-       END-PERFORM
+       IF WconnectedAsAdmin = 0 THEN
+         MOVE WnumClub TO fc_id
+       ELSE
+         DISPLAY "Entrez l'ID du club"
+         PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+           ACCEPT fc_id
+         END-PERFORM
+       END-IF
+       
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -851,10 +855,15 @@
       *MODIFICATION DE LA VILLE DU CLUB
        MODIFY_CLUB_TOWN.
 
-       DISPLAY "Entrez l'ID du club"
-       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
-         ACCEPT fc_id
-       END-PERFORM
+       IF WconnectedAsAdmin = 0 THEN
+         MOVE WnumClub TO fc_id
+       ELSE
+         DISPLAY "Entrez l'ID du club"
+         PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+           ACCEPT fc_id
+         END-PERFORM
+       END-IF
+       
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -931,10 +940,15 @@
       *MODIFICATION DU SPORT DU CLUB
        MODIFY_CLUB_SPORT.
 
-       DISPLAY "Entrez l'ID du club"
-       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
-         ACCEPT fc_id
-       END-PERFORM
+       IF WconnectedAsAdmin = 0 THEN
+         MOVE WnumClub TO fc_id
+       ELSE
+         DISPLAY "Entrez l'ID du club"
+         PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+           ACCEPT fc_id
+         END-PERFORM
+       END-IF
+       
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"

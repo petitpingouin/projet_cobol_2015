@@ -61,7 +61,7 @@
        01 Tville.
               02 fv_id PIC 9(15).
               02 fv_nom PIC A(30).
-              02 fv_codePost PIC 9(5).
+              02 fv_codePost PIC X(5).
               02 fv_agglo PIC 9.
 
        FD fsalle.
@@ -278,4 +278,5 @@
        COPY crud.
        COPY gestionId.
        COPY resa.
-      * COPY ph.
+       COPY gestionResa.
+       
