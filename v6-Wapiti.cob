@@ -122,8 +122,8 @@
        77 fresa_stat PIC 9(2).
        77 fid_stat PIC 9(2).
        77 Wchoix PIC 9.
-       77 Woption PIC 9.
-       77 Woption2 PIC 9.
+       77 Woption PIC 99.
+       77 Woption2 PIC 99.
        77 Wmdp PIC X(30).
        77 Wconnected PIC 9.
        77 WconnectedAsAdmin PIC 9.

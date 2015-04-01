@@ -37,7 +37,7 @@
          DISPLAY "6- Gestion des associations"
          DISPLAY "7- Entretiens"
          DISPLAY "8- Statistiques"
-         DISPLAY "9- Consultation du planning
+         DISPLAY "9- Consultation du planning"
          DISPLAY "10- Recherches"
          DISPLAY "----"
          ACCEPT Woption
@@ -55,6 +55,23 @@
          END-EVALUATE
        END-PERFORM.
 
+       MENU_STATISTIQUES.
+       PERFORM WITH TEST AFTER UNTIL Woption2=1
+         DISPLAY "*********************************************"
+         DISPLAY "           Affichage du planning             "
+         DISPLAY "*********************************************"
+         DISPLAY "Sélectionnez une option :"
+         DISPLAY "----"
+         DISPLAY "0- Quitter le programme"
+         DISPLAY "1- Revenir au menu précédent"
+         DISPLAY "----"
+         ACCEPT Woption2
+         EVALUATE Woption2
+             WHEN 0 PERFORM SHUTDOWN
+             
+         END-EVALUATE
+       END-PERFORM.
+       
        MENU_PLANNING.
        PERFORM WITH TEST AFTER UNTIL Woption2=1
          DISPLAY "*********************************************"
