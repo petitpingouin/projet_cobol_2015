@@ -68,6 +68,7 @@
          DISPLAY "--------------------------"
          DISPLAY " ID / Nom "
          DISPLAY " --- "
+         MOVE 0 TO WcrudFin
          PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
            READ fville NEXT
              AT END
@@ -169,6 +170,7 @@
          DISPLAY "--------------------------"
          DISPLAY " ID / Nom "
          DISPLAY " --- "
+         MOVE 0 TO WcrudFin
          PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
            READ fville NEXT
              AT END
@@ -231,29 +233,96 @@
        
       *Création d'une association sport/salle
        CREATE_ASSOC.
-
-       DISPLAY 'Id de la salle:'
-
-       PERFORM WITH TEST AFTER UNTIL fa_idSalle IS NUMERIC
-         ACCEPT fa_idSalle
+       
+       DISPLAY 'Id de la salle'
+       DISPLAY "Chercher l'ID de la salle ? (0/1)"
+       
+       MOVE 5 TO WcrudChoix
+       PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0 OR WcrudChoix = 1
+         ACCEPT WcrudChoix
        END-PERFORM
-      *La salle existe-t-elle?
-       MOVE fa_idSalle TO fs_id
-       READ fsalle
-       INVALID KEY
-         DISPLAY "La salle n'existe pas"
-       NOT INVALID KEY
-         DISPLAY "Sport à associer: "
-         PERFORM WITH TEST AFTER UNTIL fa_nomSport IS ALPHABETIC
-           ACCEPT fa_nomSport
+       
+       IF WcrudChoix = 1 THEN
+      *  On affiche les ID des salles
+         CLOSE fsalle
+         OPEN I-O fsalle
+         DISPLAY "--------  Salles ---------"
+         DISPLAY "--------------------------"
+         DISPLAY " ID / Nom / Ville / Adresse "
+         DISPLAY " --- "
+         MOVE 0 TO WcrudFin
+         PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
+           READ fsalle NEXT
+           AT END
+             MOVE 1 TO WcrudFin
+           NOT AT END
+             MOVE fs_ville TO fv_id
+             READ fville
+             INVALID KEY
+               DISPLAY "/!\ Erreur dans la matrice (ville pour salle)"
+             NOT INVALID KEY
+               DISPLAY fs_id," / ",fs_nom," / ",fv_nom," / ",fs_addr
+             END-READ
+           END-READ
+         END-PERFORM
+         DISPLAY "--------------------------"
+        
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la salle correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fa_idSalle IS NUMERIC
+             ACCEPT fa_idSalle
+           END-PERFORM
+           
+      *    La salle existe-t-elle?
+           MOVE fa_idSalle TO fs_id
+           READ fsalle KEY IS fs_id
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+             DISPLAY "Sport à associer: "
+             PERFORM WITH TEST AFTER UNTIL fa_nomSport IS ALPHABETIC
+               ACCEPT fa_nomSport
+             END-PERFORM
+              
+             WRITE Tassoc
+             INVALID KEY
+               DISPLAY "/!\ Erreur"
+             NOT INVALID KEY
+               DISPLAY "Association ajoutée"
+           END-READ
          END-PERFORM
          
-         WRITE Tassoc
-         INVALID KEY
-           DISPLAY "/!\ Erreur"
-         NOT INVALID KEY
-           DISPLAY "Association ajoutée"
-       END-READ.
+       ELSE
+      *  Sélection directe de la salle
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la salle correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fs_id IS NUMERIC
+             ACCEPT fs_id
+           END-PERFORM
+           
+      *    La salle existe-t-elle?
+           MOVE fs_id TO fs_id
+           READ fsalle
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+             DISPLAY "Sport à associer: "
+             PERFORM WITH TEST AFTER UNTIL fa_nomSport IS ALPHABETIC
+               ACCEPT fa_nomSport
+             END-PERFORM
+              
+             WRITE Tassoc
+             INVALID KEY
+               DISPLAY "/!\ Erreur"
+             NOT INVALID KEY
+               DISPLAY "Association ajoutée"
+             END-READ
+           END-PERFORM
+       END-IF.
         
       *****************************************************************
       * LECTURES
@@ -511,6 +580,7 @@
                  DISPLAY "La ville a été modifiée avec succès.".
 
       * Modifications propres à une salle
+      
       * Modification du nom de la salle
        MODIFY_ROOM_NOM.
 
@@ -620,19 +690,80 @@
        PERFORM WITH TEST AFTER UNTIL fs_id IS NUMERIC
          ACCEPT fs_id
        END-PERFORM
+       
        READ fsalle KEY IS fs_id
           INVALID KEY
             DISPLAY "Il n'existe pas de salle portant ce numéro"
           NOT INVALID KEY
-            DISPLAY "Entrez la nouvelle ville de la salle"
-            PERFORM WITH TEST AFTER UNTIL fs_ville IS ALPHABETIC
-              ACCEPT fs_ville
+            
+            DISPLAY "Chercher l'ID de la ville ? (0/1)"
+       
+            MOVE 5 TO WcrudChoix
+            PERFORM WITH TEST AFTER UNTIL WcrudChoix=0 OR WcrudChoix = 1
+              ACCEPT WcrudChoix
             END-PERFORM
+            IF WcrudChoix = 1 THEN
+      *       On affiche les ID des villes
+              CLOSE fville
+              OPEN I-O fville
+              DISPLAY "--------  Villes ---------"
+              DISPLAY "--------------------------"
+              DISPLAY " ID / Nom "
+              DISPLAY " --- "
+              MOVE 0 TO WcrudFin
+              PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
+                READ fville NEXT
+                  AT END
+                    MOVE 1 TO WcrudFin
+                  NOT AT END
+                    DISPLAY fv_id, " / ", fv_nom
+                END-READ
+              END-PERFORM
+              DISPLAY "--------------------------"
+             
+              MOVE 1 TO WcrudChoix
+              PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+                DISPLAY "Entrez l'ID de la ville correspondante:"
+                PERFORM WITH TEST AFTER UNTIL fs_ville IS NUMERIC
+                  ACCEPT fs_ville
+                END-PERFORM
+               
+      *         La ville existe-t-elle?
+                MOVE fs_ville TO fv_id
+                READ fville KEY IS fv_id
+                INVALID KEY
+                  DISPLAY "La salle n'existe pas"
+                NOT INVALID KEY
+                  MOVE 0 TO WcrudChoix
+                END-READ
+              END-PERFORM
+              
+            ELSE
+      *       Sélection directe de la ville
+              MOVE 1 TO WcrudChoix
+              PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+                DISPLAY "Entrez l'ID de la ville correspondante:"
+                PERFORM WITH TEST AFTER UNTIL fs_ville IS NUMERIC
+                  ACCEPT fs_ville
+                END-PERFORM
+               
+      *         La ville existe-t-elle?
+                MOVE fs_ville TO fv_id
+                READ fville KEY IS fv_id
+                INVALID KEY
+                  DISPLAY "La salle n'existe pas"
+                NOT INVALID KEY
+                  MOVE 0 TO WcrudChoix
+                END-READ
+              END-PERFORM
+            END-IF
+                        
             REWRITE Tsalle
                INVALID KEY
                  DISPLAY "Erreur de réécriture."
                NOT INVALID KEY
-                 DISPLAY "La salle a été modifiée avec succès.".
+                 DISPLAY "La salle a été modifiée avec succès."
+        END-READ.
 
       * Modification du prix de la salle
        MODIFY_ROOM_PRIX.
@@ -644,7 +775,7 @@
           INVALID KEY
             DISPLAY "Il n'existe pas de salle portant ce numéro"
           NOT INVALID KEY
-            DISPLAY "Entrez la nouveau prix de location de la salle"
+            DISPLAY "Entrez le nouveau prix de location de la salle"
             PERFORM WITH TEST AFTER UNTIL fs_prix IS NUMERIC
               ACCEPT fs_prix
              END-PERFORM
@@ -678,6 +809,10 @@
       *MODIFICATION DE L'ADRESSE DU CLUB
        MODIFY_CLUB_ADDR.
 
+       DISPLAY "Entrez l'ID du club"
+       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+         ACCEPT fc_id
+       END-PERFORM
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -693,8 +828,12 @@
                  DISPLAY "Le club a été modifiée avec succès.".
 
       *MODIFICATION DU PRESIDENT DU CLUB
-       MODIFY_CLUB_ADDR.
+       MODIFY_CLUB_PSDT.
 
+       DISPLAY "Entrez l'ID du club"
+       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+         ACCEPT fc_id
+       END-PERFORM
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
@@ -710,16 +849,79 @@
                  DISPLAY "Le club a été modifiée avec succès.".
 
       *MODIFICATION DE LA VILLE DU CLUB
-       MODIFY_CLUB_ADDR.
+       MODIFY_CLUB_TOWN.
 
+       DISPLAY "Entrez l'ID du club"
+       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+         ACCEPT fc_id
+       END-PERFORM
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"
           NOT INVALID KEY
-            DISPLAY "Entrez la nouvelle ville du club"
-            PERFORM WITH TEST AFTER UNTIL fc_ville IS ALPHABETIC
-              ACCEPT fc_ville
+            
+            DISPLAY "Chercher l'ID de la ville ? (0/1)"
+       
+            MOVE 5 TO WcrudChoix
+            PERFORM WITH TEST AFTER UNTIL WcrudChoix=0 OR WcrudChoix = 1
+              ACCEPT WcrudChoix
             END-PERFORM
+            IF WcrudChoix = 1 THEN
+      *       On affiche les ID des villes
+              CLOSE fville
+              OPEN I-O fville
+              DISPLAY "--------  Villes ---------"
+              DISPLAY "--------------------------"
+              DISPLAY " ID / Nom "
+              DISPLAY " --- "
+              MOVE 0 TO WcrudFin
+              PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
+                READ fville NEXT
+                  AT END
+                    MOVE 1 TO WcrudFin
+                  NOT AT END
+                    DISPLAY fv_id, " / ", fv_nom
+                END-READ
+              END-PERFORM
+              DISPLAY "--------------------------"
+             
+              MOVE 1 TO WcrudChoix
+              PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+                DISPLAY "Entrez l'ID de la ville correspondante:"
+                PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
+                  ACCEPT fc_ville
+                END-PERFORM
+               
+      *         La ville existe-t-elle?
+                MOVE fc_ville TO fv_id
+                READ fville KEY IS fv_id
+                INVALID KEY
+                  DISPLAY "La salle n'existe pas"
+                NOT INVALID KEY
+                  MOVE 0 TO WcrudChoix
+                END-READ
+              END-PERFORM
+              
+            ELSE
+      *       Sélection directe de la ville
+              MOVE 1 TO WcrudChoix
+              PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+                DISPLAY "Entrez l'ID de la ville correspondante:"
+                PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
+                  ACCEPT fc_ville
+                END-PERFORM
+               
+      *         La ville existe-t-elle?
+                MOVE fc_ville TO fv_id
+                READ fville KEY IS fv_id
+                INVALID KEY
+                  DISPLAY "La salle n'existe pas"
+                NOT INVALID KEY
+                  MOVE 0 TO WcrudChoix
+                END-READ
+              END-PERFORM
+            END-IF
+          
             REWRITE Tclub
               INVALID KEY
                  DISPLAY "Erreur de réécriture."
@@ -727,8 +929,12 @@
                  DISPLAY "Le club a été modifiée avec succès.".
 
       *MODIFICATION DU SPORT DU CLUB
-       MODIFY_CLUB_ADDR.
+       MODIFY_CLUB_SPORT.
 
+       DISPLAY "Entrez l'ID du club"
+       PERFORM WITH TEST AFTER UNTIL fc_id IS NUMERIC
+         ACCEPT fc_id
+       END-PERFORM
        READ fclub KEY IS fc_id
           INVALID KEY
             DISPLAY "Il n'existe pas de club portant ce numéro"

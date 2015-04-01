@@ -21,29 +21,6 @@
          END-EVALUATE
        END-PERFORM.
 
-       MENU_GESTION_RESA_USER.
-       PERFORM WITH TEST AFTER UNTIL Woption2=1
-         DISPLAY "*********************************************"
-         DISPLAY "           Gestion des réservations          "
-         DISPLAY "*********************************************"
-         DISPLAY "Sélectionnez une option :"
-         DISPLAY "----"
-         DISPLAY "0- Quitter le programme"
-         DISPLAY "1- Revenir au menu précédent"
-         DISPLAY "2- Afficher vos réservations"
-         DISPLAY "3- Créer une réservation"
-         DISPLAY "3- Modifier une réservation"
-         DISPLAY "4- Supprimer une réservation"
-         DISPLAY "5- Rechercher une réservation"
-         DISPLAY "6- Revenir au menu précédent"
-         DISPLAY "----"
-         ACCEPT Woption2
-         EVALUATE Woption2
-             WHEN 0 STOP RUN
-      *       WHEN 2 PERFORM SHOW_RESAS
-         END-EVALUATE
-       END-PERFORM.
-
        MENU_ADMIN.
        PERFORM WITH TEST AFTER UNTIL Woption=1
          DISPLAY "*********************************************"
@@ -185,17 +162,17 @@
          DISPLAY "0- Quitter le programme"
          DISPLAY "1- Revenir au menu précédent"
          DISPLAY "2- Créer une association"
-         DISPLAY "4- Supprimer une réservation"
-         DISPLAY "5- Afficher association pour un club"
-         DISPLAY "6- Afficher toutes les associations"
+         DISPLAY "3- Supprimer une association"
+         DISPLAY "4- Afficher association pour un club"
+         DISPLAY "5- Afficher toutes les associations"
          DISPLAY "----"
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
              WHEN 2 PERFORM CREATE_ASSOC
-             WHEN 4 PERFORM DELETE_ASSOC
-             WHEN 5 PERFORM READ_ASSOC_BY_SALLE
-             WHEN 6 PERFORM DISPLAY_ASSOC
+             WHEN 3 PERFORM DELETE_ASSOC
+             WHEN 4 PERFORM READ_ASSOC_BY_SALLE
+             WHEN 5 PERFORM DISPLAY_ASSOC
          END-EVALUATE
        END-PERFORM.
 
@@ -236,6 +213,11 @@
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
+             WHEN 2 PERFORM MODIFY_CLUB_NOM
+             WHEN 3 PERFORM MODIFY_CLUB_ADDR
+             WHEN 4 PERFORM MODIFY_CLUB_PSDT
+             WHEN 5 PERFORM MODIFY_CLUB_TOWN
+             WHEN 6 PERFORM MODIFY_CLUB_SPORT
          END-EVALUATE
        END-PERFORM.
 

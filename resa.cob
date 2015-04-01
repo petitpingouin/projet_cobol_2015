@@ -270,6 +270,7 @@
            NOT INVALID KEY
              MOVE fv_agglo TO Wresa_clubAgglo
            END-READ
+           
       *    Lecture de agglo ville de la salle
            MOVE Wresa_idSalle TO fv_id
            READ fville
