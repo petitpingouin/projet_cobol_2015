@@ -37,6 +37,8 @@
          DISPLAY "6- Gestion des associations"
          DISPLAY "7- Entretiens"
          DISPLAY "8- Statistiques"
+         DISPLAY "9- Consultation du planning
+         DISPLAY "10- Recherches"
          DISPLAY "----"
          ACCEPT Woption
          EVALUATE Woption
@@ -47,6 +49,43 @@
              WHEN 5 PERFORM MENU_GESTION_CLUB
              WHEN 6 PERFORM MENU_GESTION_ASSOC
              WHEN 7 PERFORM MENU_ENTRETIEN
+             WHEN 8 PERFORM MENU_STATISTIQUES
+             WHEN 9 PERFORM MENU_PLANNING
+             WHEN 10 PERFORM MENU_RECHERCHES
+         END-EVALUATE
+       END-PERFORM.
+
+       MENU_PLANNING.
+       PERFORM WITH TEST AFTER UNTIL Woption2=1
+         DISPLAY "*********************************************"
+         DISPLAY "           Affichage du planning             "
+         DISPLAY "*********************************************"
+         DISPLAY "Sélectionnez une option :"
+         DISPLAY "----"
+         DISPLAY "0- Quitter le programme"
+         DISPLAY "1- Revenir au menu précédent"
+         DISPLAY "----"
+         ACCEPT Woption2
+         EVALUATE Woption2
+             WHEN 0 PERFORM SHUTDOWN
+             
+         END-EVALUATE
+       END-PERFORM.
+       
+       MENU_RECHERCHES.
+       PERFORM WITH TEST AFTER UNTIL Woption2=1
+         DISPLAY "*********************************************"
+         DISPLAY "                 Recherches                  "
+         DISPLAY "*********************************************"
+         DISPLAY "Sélectionnez une option :"
+         DISPLAY "----"
+         DISPLAY "0- Quitter le programme"
+         DISPLAY "1- Revenir au menu précédent"
+         DISPLAY "----"
+         ACCEPT Woption2
+         EVALUATE Woption2
+             WHEN 0 PERFORM SHUTDOWN
+             
          END-EVALUATE
        END-PERFORM.
 
@@ -60,17 +99,16 @@
          DISPLAY "0- Quitter le programme"
          DISPLAY "1- Revenir au menu précédent"
          DISPLAY "2- Créer une réservation"
-         DISPLAY "3- Modifier une réservation"
-         DISPLAY "4- Supprimer une réservation"
-         DISPLAY "5- Rechercher une réservation"
-         DISPLAY "6- Afficher toutes les réservations"
+         DISPLAY "3- Supprimer une réservation"
+         DISPLAY "4- Rechercher une réservation"
+         DISPLAY "5- Afficher toutes les réservations"
          DISPLAY "----"
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
              WHEN 2 PERFORM ADD_RESA
-             WHEN 4 PERFORM DELETE_RESA
-             WHEN 6 PERFORM DISPLAY_RESAS
+             WHEN 3 PERFORM DELETE_RESA
+             WHEN 5 PERFORM DISPLAY_RESAS
          END-EVALUATE
        END-PERFORM.
 

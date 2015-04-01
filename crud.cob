@@ -488,7 +488,7 @@
          END-READ
        END-PERFORM.
       
-      *Affichage des réservations
+      *Affichage de toutes les réservations
        DISPLAY_RESAS.
        
        CLOSE fresa
