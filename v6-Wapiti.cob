@@ -46,6 +46,7 @@
       *fresa_stat permettra de récupérer le statut du fichier
        FILE STATUS IS fresa_stat
        RECORD KEY IS fr_cles
+       ALTERNATE RECORD KEY IS fr_dateDebut WITH DUPLICATES
        ALTERNATE RECORD KEY IS fr_idClub WITH DUPLICATES
        ALTERNATE RECORD KEY IS fr_idSalle WITH DUPLICATES.
 
@@ -71,7 +72,7 @@
               02 fs_ouv_h PIC 99.
               02 fs_ferm_h PIC 99.
               02 fs_addr PIC X(30).
-              02 fs_ville PIC A(30).
+              02 fs_ville PIC 9(15).
               02 fs_prix PIC 999V99.
 
        FD fclub.
@@ -80,7 +81,7 @@
               02 fc_nom PIC A(30).
               02 fc_addr PIC X(30).
               02 fc_president PIC A(30).
-              02 fc_ville PIC A(30).
+              02 fc_ville PIC 9(15).
               02 fc_sport PIC A(30).
 
        FD fassoc.
@@ -135,27 +136,36 @@
        77 WidCourantSalle PIC 9(3).
        77 WidCourantVille PIC 9(15).
        77 WidCourantClub PIC 9(4).
-       77 WclubConnecte PIC 9(4).
        77 Wrecherche_jour PIC X(10).
        77 WfileStatus PIC 9.
        77 WendSearch PIC 9.
        77 Wtrouve PIC 9.
        77 Wnontrouve PIC 9.
        77 Wtemp PIC 9(15).
+       77 WcrudChoix PIC 9.
+       77 WcrudFin PIC 9.
        
       *RESA
        77 Wrep1 PIC 9.
        77 Wferm PIC 9.
        77 Wprixreduit PIC 9.   
-       77 Wfin PIC 9.
+       77 Wresafin PIC 9.
+       77 Wresafin2 PIC 9.
        77 Wjours PIC A(20).
        77 Wresaimpossible PIC 9.
+       77 WnotDispo PIC 9.
+       77 Wpasdesalle PIC 9.
+       77 Wresa_idClub PIC 9(4).
        77 Wresa_a PIC 99(4).
        77 Wresa_m PIC 99.
        77 Wresa_j PIC 9(2).
-       77 WHfin PIC 99.
-       77 WHdebut PIC 99.
-       77 Wfin3 PIC 9.
+       77 Wresa_h_debut PIC 99.
+       77 Wresa_h_fin PIC 99.
+       77 Wresa_idSalle PIC 9(3).
+       77 Wresa_sportPratique PIC A(30).
+       77 Wresa_montant PIC 999V99.
+       77 Wresa_clubAgglo PIC 9.
+       
        
        
        PROCEDURE DIVISION.
@@ -239,7 +249,6 @@
                         ACCEPT Wmdp
                     END-PERFORM
                     MOVE 0 TO WconnectedAsAdmin
-                    MOVE fc_id TO WclubConnecte
                     PERFORM MENU_USR
                  ELSE
                     DISPLAY "Ce numéro de club n'existe pas."

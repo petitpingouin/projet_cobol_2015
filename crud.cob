@@ -13,9 +13,15 @@
        PERFORM WITH TEST AFTER UNTIL fv_nom IS ALPHABETIC
          ACCEPT fv_nom
        END-PERFORM
+       
        DISPLAY'Donnez un code postal'
        PERFORM WITH TEST AFTER UNTIL fv_codePost IS NUMERIC
          ACCEPT fv_codePost
+       END-PERFORM
+       
+       DISPLAY "Cette ville fait-elle partie de l'agglomération?"
+       PERFORM WITH TEST AFTER UNTIL fv_agglo = 1 OR fv_agglo = 0
+         ACCEPT fv_agglo
        END-PERFORM
        
        WRITE Tville
@@ -41,20 +47,85 @@
        PERFORM WITH TEST AFTER UNTIL fs_ouv_h IS NUMERIC
          ACCEPT fs_ouv_h
        END-PERFORM
+       
        DISPLAY "Donnez l'heure de fermeture :"
        PERFORM WITH TEST AFTER UNTIL (fs_ferm_h IS NUMERIC)AND (fs_ferm_
       -h > fs_ouv_h)
          ACCEPT fs_ferm_h
        END-PERFORM
+        
+       DISPLAY "Chercher l'ID de la ville du club ? (0/1)"
+       
+       MOVE 5 TO WcrudChoix
+       PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0 OR WcrudChoix = 1
+         ACCEPT WcrudChoix
+       END-PERFORM
+       IF WcrudChoix = 1 THEN
+      *  On affiche les ID des villes
+         CLOSE fville
+         OPEN I-O fville
+         DISPLAY "--------  Villes ---------"
+         DISPLAY "--------------------------"
+         DISPLAY " ID / Nom "
+         DISPLAY " --- "
+         PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
+           READ fville NEXT
+             AT END
+               MOVE 1 TO WcrudFin
+             NOT AT END
+               DISPLAY fv_id, " / ", fv_nom
+           END-READ
+         END-PERFORM
+         DISPLAY "--------------------------"
+        
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la ville correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fs_ville IS NUMERIC
+             ACCEPT fs_ville
+           END-PERFORM
+           
+      *    La ville existe-t-elle?
+           MOVE fs_ville TO fv_id
+           READ fville KEY IS fv_id
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+           END-READ
+         END-PERFORM
+         
+       ELSE
+      *  Sélection directe de la ville
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la ville correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fs_ville IS NUMERIC
+             ACCEPT fs_ville
+           END-PERFORM
+           
+      *    La ville existe-t-elle?
+           MOVE fs_ville TO fv_id
+           READ fville KEY IS fv_id
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+           END-READ
+         END-PERFORM
+       END-IF
+       
        DISPLAY "Entrez l'adresse de la salle"
        ACCEPT fs_addr
-       DISPLAY "Entrez la ville à laquelle appartient la salle"
-       PERFORM WITH TEST AFTER UNTIL fs_ville IS ALPHABETIC
-         ACCEPT fs_ville
-       END-PERFORM
+      
        DISPLAY "Entrez le prix de location pour une heure"
        PERFORM WITH TEST AFTER UNTIL fs_prix IS NUMERIC
          ACCEPT fs_prix
+       END-PERFORM
+       
+       DISPLAY "Disponibilité ? (0: indisponible, 1: disponible)"
+       PERFORM WITH TEST AFTER UNTIL fs_dispo = 1 OR fs_dispo = 0
+         ACCEPT fs_dispo
        END-PERFORM
        
        WRITE Tsalle
@@ -75,16 +146,77 @@
        PERFORM WITH TEST AFTER UNTIL fc_nom IS ALPHABETIC
          ACCEPT fc_nom
        END-PERFORM
+       
        DISPLAY'Donnez une adresse'
        ACCEPT fc_addr
+       
        DISPLAY'Donnez le nom du président'
        PERFORM WITH TEST AFTER UNTIL fc_president IS ALPHABETIC
          ACCEPT fc_president
        END-PERFORM
-       DISPLAY'Donnez la ville du club'
-       PERFORM WITH TEST AFTER UNTIL fc_ville IS ALPHABETIC
-         ACCEPT fc_ville
+       
+       DISPLAY "Chercher l'ID de la ville du club ? (0/1)"
+       
+       MOVE 5 TO WcrudChoix
+       PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0 OR WcrudChoix = 1
+         ACCEPT WcrudChoix
        END-PERFORM
+       IF WcrudChoix = 1 THEN
+      *  On affiche les ID des villes
+         CLOSE fville
+         OPEN I-O fville
+         DISPLAY "--------  Villes ---------"
+         DISPLAY "--------------------------"
+         DISPLAY " ID / Nom "
+         DISPLAY " --- "
+         PERFORM WITH TEST AFTER UNTIL WcrudFin = 1
+           READ fville NEXT
+             AT END
+               MOVE 1 TO WcrudFin
+             NOT AT END
+               DISPLAY fv_id, " / ", fv_nom
+           END-READ
+         END-PERFORM
+         DISPLAY "--------------------------"
+        
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la ville correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
+             ACCEPT fc_ville
+           END-PERFORM
+           
+      *    La ville existe-t-elle?
+           MOVE fc_ville TO fv_id
+           READ fville KEY IS fv_id
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+           END-READ
+         END-PERFORM
+         
+       ELSE
+      *  Sélection directe de la ville
+         MOVE 1 TO WcrudChoix
+         PERFORM WITH TEST AFTER UNTIL WcrudChoix = 0
+           DISPLAY "Entrez l'ID de la ville correspondante:"
+           PERFORM WITH TEST AFTER UNTIL fc_ville IS NUMERIC
+             ACCEPT fc_ville
+           END-PERFORM
+           
+      *    La ville existe-t-elle?
+           MOVE fc_ville TO fv_id
+           READ fville KEY IS fv_id
+           INVALID KEY
+             DISPLAY "La salle n'existe pas"
+           NOT INVALID KEY
+             MOVE 0 TO WcrudChoix
+           END-READ
+         END-PERFORM
+       END-IF
+       
+       
        DISPLAY'Donnez le sport proposé par le club'
        PERFORM WITH TEST AFTER UNTIL fc_sport IS ALPHABETIC
          ACCEPT fc_sport
@@ -107,7 +239,7 @@
        END-PERFORM
       *La salle existe-t-elle?
        MOVE fa_idSalle TO fs_id
-       READ fsalle KEY IS fs_id
+       READ fsalle
        INVALID KEY
          DISPLAY "La salle n'existe pas"
        NOT INVALID KEY
@@ -115,13 +247,14 @@
          PERFORM WITH TEST AFTER UNTIL fa_nomSport IS ALPHABETIC
            ACCEPT fa_nomSport
          END-PERFORM
-        
+         
          WRITE Tassoc
          INVALID KEY
            DISPLAY "/!\ Erreur"
          NOT INVALID KEY
-           DISPLAY "Association ajoutée".
-
+           DISPLAY "Association ajoutée"
+       END-READ.
+        
       *****************************************************************
       * LECTURES
       *****************************************************************

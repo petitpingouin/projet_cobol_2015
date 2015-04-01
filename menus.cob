@@ -150,7 +150,7 @@
        END-PERFORM.
 
        MENU_GESTION_CLUB.
-       PERFORM WITH TEST AFTER UNTIL Woption=1
+       PERFORM WITH TEST AFTER UNTIL Woption2=1
          DISPLAY "*********************************************"
          DISPLAY "              Gestion des clubs              "
          DISPLAY "*********************************************"
