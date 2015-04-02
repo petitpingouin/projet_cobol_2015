@@ -49,7 +49,7 @@
        ALTERNATE RECORD KEY IS fr_dateDebut WITH DUPLICATES
        ALTERNATE RECORD KEY IS fr_idClub WITH DUPLICATES
        ALTERNATE RECORD KEY IS fr_idSalle WITH DUPLICATES.
-
+       
        SELECT fid ASSIGN TO "id.dat"
        ORGANIZATION SEQUENTIAL
        ACCESS MODE IS SEQUENTIAL
@@ -107,7 +107,9 @@
                     03 fr_dateFin_h PIC 99.
               02 fr_sportPratique PIC A(30).
               02 fr_montant PIC 999V99.
-
+              02 fr_type PIC A(30).
+              02 fr_actions PIC X(255).
+       
        FD fid.
        01 Tid.
               02 fid_type PIC A(10).
@@ -165,6 +167,7 @@
        77 Wresa_sportPratique PIC A(30).
        77 Wresa_montant PIC 999V99.
        77 Wresa_clubAgglo PIC 9.
+       77 Wresa_type PIC A(30).
        
        
        
@@ -277,6 +280,7 @@
        COPY menus.
        COPY crud.
        COPY gestionId.
-       COPY resa.
+       COPY resa2.
        COPY gestionResa.
+       COPY stats.
        

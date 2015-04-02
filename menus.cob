@@ -19,6 +19,7 @@
              WHEN 2 PERFORM MENU_PLANNING
              WHEN 3 PERFORM MENU_GESTION_RESA
              WHEN 4 PERFORM MENU_GESTION_MODIF_CLUB
+             WHEN 5 PERFORM MENU_STATISTIQUES
          END-EVALUATE
        END-PERFORM.
 
@@ -56,6 +57,24 @@
          END-EVALUATE
        END-PERFORM.
 
+       MENU_STATISTIQUES.
+       PERFORM WITH TEST AFTER UNTIL Woption2=1
+         DISPLAY "*********************************************"
+         DISPLAY "         Affichage des Statistiques          "
+         DISPLAY "*********************************************"
+         DISPLAY "Sélectionnez une option :"
+         DISPLAY "----"
+         DISPLAY "0- Quitter le programme"
+         DISPLAY "1- Revenir au menu précédent"
+         DISPLAY "2- Facture du mois"
+         DISPLAY "----"
+         ACCEPT Woption2
+         EVALUATE Woption2
+             WHEN 0 PERFORM SHUTDOWN
+             WHEN 2 PERFORM FACTURE_MOIS
+         END-EVALUATE
+       END-PERFORM.
+       
        MENU_STATISTIQUES_ADMIN.
        PERFORM WITH TEST AFTER UNTIL Woption2=1
          DISPLAY "*********************************************"
@@ -240,7 +259,7 @@
        MENU_ENTRETIEN.
        PERFORM WITH TEST AFTER UNTIL Woption2=1
          DISPLAY "*********************************************"
-         DISPLAY "           Planning de l'entretien           "
+         DISPLAY "          Gestion des Entretiens             "
          DISPLAY "*********************************************"
          DISPLAY "Sélectionnez une option :"
          DISPLAY "----"
@@ -248,11 +267,14 @@
          DISPLAY "1- Revenir au menu précédent"
          DISPLAY "2- Plannification d'entretiens"
          DISPLAY "3- Suppression d'entretien"
-         DISPLAY "4- Modification d'entretien"
+         DISPLAY "4- Affichage des entretiens"
          DISPLAY "----"
          ACCEPT Woption2
          EVALUATE Woption2
              WHEN 0 PERFORM SHUTDOWN
+             WHEN 2 PERFORM ADD_RESA
+             WHEN 3 PERFORM DELETE_ENTRETIEN
+             WHEN 4 PERFORM DISPLAY_ENTRETIENS
          END-EVALUATE
        END-PERFORM.
 

@@ -485,17 +485,41 @@
          AT END
            MOVE 1 TO WendSearch
          NOT AT END
-      *    N'affiche que si admin ou résa du club
-           DISPLAY "Id Salle:", fr_idSalle
-           DISPLAY "Club: ", fr_idClub
-           DISPLAY "Sport: ", fr_sportPratique
-           DISPLAY "Date: ",fr_dateDebut_j,"/",fr_dateDebut_m,"/",fr_dat
-      -eDebut_j
-           DISPLAY "De ", fr_dateDebut_h, " à ", fr_dateFin_h
-           IF WconnectedAsAdmin = 1 THEN
-             DISPLAY "Montant: ", fr_montant
+           IF fr_type = "Réservation" THEN
+             DISPLAY "Id Salle:", fr_idSalle
+             DISPLAY "Club: ", fr_idClub
+             DISPLAY "Sport: ", fr_sportPratique
+             DISPLAY "Date: ",fr_dateDebut_j,"/",fr_dateDebut_m,"/",fr_d
+      -ateDebut_j
+             DISPLAY "De ", fr_dateDebut_h, " à ", fr_dateFin_h
+             IF WconnectedAsAdmin = 1 THEN
+               DISPLAY "Montant: ", fr_montant
+             END-IF
+             DISPLAY "----------------"
            END-IF
-           DISPLAY "----------------"
+       END-READ
+       END-PERFORM.
+       
+      *Affichage de tous les entretiens
+       DISPLAY_ENTRETIENS.
+       
+       CLOSE fresa
+       OPEN I-O fresa
+       DISPLAY "**********************************************"
+       MOVE 0 TO WendSearch
+       PERFORM WITH TEST AFTER UNTIL WendSearch = 1
+         READ fresa NEXT
+         AT END
+           MOVE 1 TO WendSearch
+         NOT AT END
+           IF fr_type = "Entretien" THEN
+             DISPLAY "Id Salle:", fr_idSalle
+             DISPLAY "Date: ",fr_dateDebut_j,"/",fr_dateDebut_m,"/",fr_d
+      -ateDebut_j
+             DISPLAY "De ", fr_dateDebut_h, " à ", fr_dateFin_h
+             DISPLAY "Actions réalisées: ", fr_actions
+             DISPLAY "----------------"
+           END-IF
        END-READ
        END-PERFORM.
 
@@ -1023,18 +1047,41 @@
           INVALID KEY
             DISPLAY "Il n'existe pas de réservation correspondante"
           NOT INVALID KEY
-            IF WconnectedAsAdmin=1 THEN
-              DELETE fclub RECORD
+            IF WconnectedAsAdmin=1  AND fr_type = "Réservation" THEN
+              DELETE fresa RECORD
                  NOT INVALID KEY
-                      DISPLAY "La réservation a bien été supprimée."
+                   DISPLAY "La réservation a bien été supprimée."
             ELSE
-              IF fr_idClub=WnumClub THEN
-                DELETE fclub RECORD
-                   NOT INVALID KEY
-                      DISPLAY "La réservation a bien été supprimée."
+              IF fr_idClub=WnumClub AND fr_type = "Réservation" THEN
+                DELETE fresa RECORD
+                  NOT INVALID KEY
+                    DISPLAY "La réservation a bien été supprimée."
               ELSE
                  DISPLAY "Vous ne pouvez pas supprimer cette résa."
               END-IF
+            END-IF.
+            
+      *SUPPRESSION D'UNE RESERVATION
+       DELETE_ENTRETIEN.
+
+       DISPLAY "Entrez l'ID de la salle concernée par l'entretien"
+       ACCEPT fr_idSalle
+       DISPLAY "Entrez l'année de la réservation (aaaa)"
+       ACCEPT fr_dateDebut_a
+       DISPLAY "Entrez le mois de la réservation (mm)"
+       ACCEPT fr_dateDebut_m
+       DISPLAY "Entrez le jour de la réservation (jj)"
+       ACCEPT fr_dateDebut_j
+       DISPLAY "Entrez l'heure de la réservation (hh)"
+       ACCEPT fr_dateDebut_h
+       READ fresa KEY IS fr_cles
+          INVALID KEY
+            DISPLAY "Il n'existe pas de réservation correspondante"
+          NOT INVALID KEY
+            IF WconnectedAsAdmin=1  AND fr_type = "Entretien" THEN
+              DELETE fresa RECORD
+                 NOT INVALID KEY
+                   DISPLAY "La réservation a bien été supprimée."
             END-IF.
 
       *SUPPRESSION D'UNE ASSOCIATION

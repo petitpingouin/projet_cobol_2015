@@ -119,7 +119,7 @@
                DISPLAY "Date: ",fr_dateDebut_j,"/",fr_dateDebut_m,"/",fr
       -_dateDebut_j
                DISPLAY "De ", fr_dateDebut_h, " à ", fr_dateFin_h
-               IF WconnectedAsAdmin = 1 THEN
+               IF WconnectedAsAdmin = 1 OR WnumClub = fr_idClub THEN
                  DISPLAY "Montant: ", fr_montant
                END-IF
                DISPLAY "----------------"
